@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot name="three_d_robot">
+
+  <!-- Load Tesseract contact manager plugins -->
+  <contact_managers_plugin_config filename="package://tesseract_support/urdf/contact_manager_plugins.yaml"/>
+
+  <!-- 3-DOF prismatic chain: base_link -> robot_body -->
+  <group name="manipulator">
+    <chain base_link="base_link" tip_link="robot_body"/>
+  </group>
+
+</robot>

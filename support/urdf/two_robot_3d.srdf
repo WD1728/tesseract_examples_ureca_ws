@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<robot name="two_robot_3d">
+
+  <group name="manipulator">
+    <joint name="r1_joint_x"/>
+    <joint name="r1_joint_y"/>
+    <joint name="r1_joint_z"/>
+    <joint name="r2_joint_x"/>
+    <joint name="r2_joint_y"/>
+    <joint name="r2_joint_z"/>
+  </group>
+
+  <!-- Optional named states for debugging -->
+  <group_state name="start" group="manipulator">
+    <joint name="r1_joint_x" value="0.0"/>
+    <joint name="r1_joint_y" value="0.0"/>
+    <joint name="r1_joint_z" value="0.0"/>
+    <joint name="r2_joint_x" value="2.0"/>
+    <joint name="r2_joint_y" value="0.0"/>
+    <joint name="r2_joint_z" value="0.0"/>
+  </group_state>
+
+  <group_state name="goal" group="manipulator">
+    <joint name="r1_joint_x" value="2.0"/>
+    <joint name="r1_joint_y" value="1.0"/>
+    <joint name="r1_joint_z" value="0.0"/>
+    <joint name="r2_joint_x" value="0.0"/>
+    <joint name="r2_joint_y" value="1.0"/>
+    <joint name="r2_joint_z" value="0.0"/>
+  </group_state>
+
+  <!-- Adjacent / same-chain links can be allowed if needed.
+       Do NOT allow r1_robot_body <-> r2_robot_body if later testing robot-robot collision. -->
+
+  <disable_collisions link1="base_link" link2="r1_link_x" reason="Adjacent"/>
+  <disable_collisions link1="r1_link_x" link2="r1_link_y" reason="Adjacent"/>
+  <disable_collisions link1="r1_link_y" link2="r1_link_z" reason="Adjacent"/>
+  <disable_collisions link1="r1_link_z" link2="r1_robot_body" reason="Adjacent"/>
+
+  <disable_collisions link1="base_link" link2="r2_link_x" reason="Adjacent"/>
+  <disable_collisions link1="r2_link_x" link2="r2_link_y" reason="Adjacent"/>
+  <disable_collisions link1="r2_link_y" link2="r2_link_z" reason="Adjacent"/>
+  <disable_collisions link1="r2_link_z" link2="r2_robot_body" reason="Adjacent"/>
+
+</robot>

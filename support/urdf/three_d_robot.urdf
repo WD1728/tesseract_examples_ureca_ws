@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<robot name="three_d_robot"
+       xmlns:tesseract="http://tesseract-robotics.github.io/tesseract"
+       tesseract:make_convex="true">
+
+  <!--
+    3D single-robot toy model for TrajOpt subgoal-timing experiment.
+
+    Robot:
+      - 3-DOF point/sphere robot
+      - joint_x, joint_y, joint_z are prismatic joints
+      - robot_body is represented as a small sphere
+
+    Obstacle:
+      - fixed spherical obstacle attached to base_link
+      - placed on the original straight-line path from start to goal
+
+    Purpose:
+      - preserve the original single-subgoal k-sweep logic
+      - make robot DOFs consistent with the 3D Bullet/Tesseract collision pipeline
+  -->
+
+  <!-- Root / world frame -->
+  <link name="base_link"/>
+
+  <!-- ========================= -->
+  <!-- Static spherical obstacle  -->
+  <!-- ========================= -->
+  <joint name="obstacle_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="obstacle_link"/>
+    <origin xyz="1.0 0.6 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="obstacle_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.20"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.20"/>
+      </geometry>
+      <material name="obstacle_red">
+        <color rgba="1.0 0.0 0.0 0.5"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- ========================= -->
+  <!-- Robot x translation        -->
+  <!-- ========================= -->
+  <joint name="joint_x" type="prismatic">
+    <parent link="base_link"/>
+    <child link="link_x"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-5.0" upper="5.0" effort="10.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link_x"/>
+
+  <!-- ========================= -->
+  <!-- Robot y translation        -->
+  <!-- ========================= -->
+  <joint name="joint_y" type="prismatic">
+    <parent link="link_x"/>
+    <child link="link_y"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-5.0" upper="5.0" effort="10.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link_y"/>
+
+  <!-- ========================= -->
+  <!-- Robot z translation        -->
+  <!-- ========================= -->
+  <joint name="joint_z" type="prismatic">
+    <parent link="link_y"/>
+    <child link="robot_body"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.0" upper="2.0" effort="10.0" velocity="2.0"/>
+  </joint>
+
+  <link name="robot_body">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.10"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.10"/>
+      </geometry>
+      <material name="robot_blue">
+        <color rgba="0.0 0.2 1.0 0.8"/>
+      </material>
+    </visual>
+  </link>
+
+</robot>

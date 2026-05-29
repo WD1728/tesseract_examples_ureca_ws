@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<robot name="two_d_obstacle_robot"
+       xmlns:tesseract="http://tesseract-robotics.github.io/tesseract"
+       tesseract:make_convex="true">
+
+  <!-- Root / world frame -->
+  <link name="base_link"/>
+
+  <!-- 2D point robot represented as a small sphere -->
+  <joint name="joint_x" type="prismatic">
+    <parent link="base_link"/>
+    <child link="x_link"/>
+    <origin xyz="1.0 0.78 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-10.0" upper="10.0" effort="100" velocity="10"/>
+  </joint>
+
+  <link name="x_link"/>
+
+  <joint name="joint_y" type="prismatic">
+    <parent link="x_link"/>
+    <child link="robot_body"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-10.0" upper="10.0" effort="100" velocity="10"/>
+  </joint>
+
+  <link name="robot_body">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.10"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.10"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Static spherical obstacle -->
+  <joint name="obstacle_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="obstacle_link"/>
+    <origin xyz="1.0 0.45 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="obstacle_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.20"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.20"/>
+      </geometry>
+    </visual>
+  </link>
+
+</robot>

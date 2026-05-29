@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="two_d_obstacle_robot">
+
+  <!-- Load Tesseract contact manager plugins -->
+  <contact_managers_plugin_config filename="package://tesseract_support/urdf/contact_manager_plugins.yaml"/>
+  
+  <!-- Planning group: 2-DOF planar robot -->
+  <group name="manipulator">
+    <chain base_link="base_link" tip_link="robot_body"/>
+  </group>
+
+  <!-- Optional named states -->
+  <group_state name="home" group="manipulator">
+    <joint name="joint_x" value="0.0"/>
+    <joint name="joint_y" value="0.0"/>
+  </group_state>
+
+</robot>
