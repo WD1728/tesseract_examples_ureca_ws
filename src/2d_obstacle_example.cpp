@@ -1,4 +1,3 @@
-cat > /home/wenda/tesseract_ws/src/tesseract_planning/tesseract_examples/src/2d_obstacle_example.cpp <<'EOF'
 /**
  * @file 2d_obstacle_example.cpp
  * @brief Minimal 2D single-robot TrajOpt obstacle-avoidance sanity check.
@@ -352,4 +351,3 @@ bool TwoDObstacleExample::run()
 }
 
 }  // namespace tesseract_examples
-EOF

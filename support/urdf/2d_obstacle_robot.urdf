@@ -10,7 +10,7 @@
   <joint name="joint_x" type="prismatic">
     <parent link="base_link"/>
     <child link="x_link"/>
-    <origin xyz="1.0 0.78 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-10.0" upper="10.0" effort="100" velocity="10"/>
   </joint>
@@ -45,7 +45,7 @@
   <joint name="obstacle_joint" type="fixed">
     <parent link="base_link"/>
     <child link="obstacle_link"/>
-    <origin xyz="1.0 0.45 0.0" rpy="0 0 0"/>
+    <origin xyz="1.0 0.78 0.0" rpy="0 0 0"/>
   </joint>
 
   <link name="obstacle_link">
