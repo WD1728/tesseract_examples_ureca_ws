@@ -57,7 +57,7 @@ namespace tesseract_examples
 namespace
 {
 constexpr double OBSTACLE_X = 1.0;
-constexpr double OBSTACLE_Y = 0.78;
+constexpr double OBSTACLE_Y = 0.6;
 constexpr double OBSTACLE_RADIUS = 0.20;
 constexpr double ROBOT_RADIUS = 0.10;
 constexpr double SAFE_RADIUS = OBSTACLE_RADIUS + ROBOT_RADIUS;
@@ -93,7 +93,7 @@ double computeMinClearance2D(const std::vector<Eigen::VectorXd>& traj)
 {
   const Eigen::Vector2d obstacle_center(OBSTACLE_X, OBSTACLE_Y);
   double min_dist = std::numeric_limits<double>::infinity();
-
+  //waypoint clearance
   for (const auto& q_vec : traj)
   {
     if (q_vec.size() < 2)
@@ -103,7 +103,7 @@ double computeMinClearance2D(const std::vector<Eigen::VectorXd>& traj)
     min_dist = std::min(min_dist, (q - obstacle_center).norm());
   }
 
-  // Also check segment-level clearance, not only waypoint-level clearance.
+  // segment clearance
   for (std::size_t i = 0; i + 1 < traj.size(); ++i)
   {
     if (traj[i].size() < 2 || traj[i + 1].size() < 2)
@@ -207,7 +207,7 @@ bool TwoDObstacleExample::run()
   // Seed:
   // Start-goal straight line is y = 0.5x.
   // At x = 1.0, the line passes through y = 0.5.
-  // Obstacle center is at (1.0, 0.78).
+  // Obstacle center is at (1.0, 0.5).
   // The centerline distance is about 0.28 m.
   // Since SAFE_RADIUS = 0.30 m, the seed slightly penetrates the obstacle.
   for (int i = 1; i < N - 1; ++i)
