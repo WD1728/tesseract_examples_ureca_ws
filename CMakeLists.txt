@@ -49,6 +49,13 @@ add_library(
   ${PROJECT_NAME}
 
   src/example.cpp
+  src/ureca_result_utils.cpp
+  src/ureca_subgoal_timing_2d_example.cpp
+  src/ureca_subgoal_timing_3d_example.cpp
+  src/ureca_penetration_failure_3d_example.cpp
+  src/ureca_symmetry_failure_3d_example.cpp
+  src/ureca_two_robot_two_subgoal_example.cpp
+  src/ureca_two_robot_two_subgoal_obstacle_example.cpp
   src/2d_obstacle_example.cpp
   src/3d_example.cpp
   src/basic_cartesian_example.cpp
@@ -131,6 +138,12 @@ add_example(${PROJECT_NAME}_puzzle_piece_auxillary_axes_example src/puzzle_piece
 add_example(${PROJECT_NAME}_puzzle_piece_example src/puzzle_piece_example_node.cpp)
 add_example(${PROJECT_NAME}_scene_graph_example src/scene_graph_example_node.cpp)
 add_example(${PROJECT_NAME}_benchmarks src/example_benchmarks_node.cpp)
+add_example(${PROJECT_NAME}_ureca_subgoal_timing_2d_example src/ureca_subgoal_timing_2d_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_subgoal_timing_3d_example src/ureca_subgoal_timing_3d_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_penetration_failure_3d_example src/ureca_penetration_failure_3d_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_symmetry_failure_3d_example src/ureca_symmetry_failure_3d_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_two_robot_two_subgoal_example src/ureca_two_robot_two_subgoal_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example src/ureca_two_robot_two_subgoal_obstacle_example_node.cpp)
 
 # OMPL Constraint planning is not available in version less than 1.4 if(NOT OMPL_VERSION VERSION_LESS "1.4.0")
 # add_example(${PROJECT_NAME}_glass_upright_ompl_example src/glass_upright_ompl_example_node.cpp) endif()
@@ -141,10 +154,15 @@ install(
   DESTINATION include
   FILES_MATCHING
   PATTERN "*.h"
+  PATTERN "*.hpp"
   PATTERN ".svn" EXCLUDE)
 
 install(
   DIRECTORY support
+  DESTINATION share/${PROJECT_NAME})
+
+install(
+  DIRECTORY scripts result_ureca
   DESTINATION share/${PROJECT_NAME})
   
 configure_package(
@@ -164,6 +182,12 @@ configure_package(
           ${PROJECT_NAME}_puzzle_piece_example
           ${PROJECT_NAME}_scene_graph_example
           ${PROJECT_NAME}_benchmarks
+          ${PROJECT_NAME}_ureca_subgoal_timing_2d_example
+          ${PROJECT_NAME}_ureca_subgoal_timing_3d_example
+          ${PROJECT_NAME}_ureca_penetration_failure_3d_example
+          ${PROJECT_NAME}_ureca_symmetry_failure_3d_example
+          ${PROJECT_NAME}_ureca_two_robot_two_subgoal_example
+          ${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example
   DEPENDENCIES
     tesseract_environment
     tesseract_command_language
@@ -191,6 +215,12 @@ install(
     ${PROJECT_NAME}_puzzle_piece_example
     ${PROJECT_NAME}_scene_graph_example
     ${PROJECT_NAME}_benchmarks
+    ${PROJECT_NAME}_ureca_subgoal_timing_2d_example
+    ${PROJECT_NAME}_ureca_subgoal_timing_3d_example
+    ${PROJECT_NAME}_ureca_penetration_failure_3d_example
+    ${PROJECT_NAME}_ureca_symmetry_failure_3d_example
+    ${PROJECT_NAME}_ureca_two_robot_two_subgoal_example
+    ${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

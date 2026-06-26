@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot name="ureca_two_robot_two_subgoal">
+  <contact_managers_plugin_config filename="package://tesseract_support/urdf/contact_manager_plugins.yaml"/>
+  <group name="manipulator">
+    <joint name="r1_joint_x"/>
+    <joint name="r1_joint_y"/>
+    <joint name="r1_joint_z"/>
+    <joint name="r2_joint_x"/>
+    <joint name="r2_joint_y"/>
+    <joint name="r2_joint_z"/>
+  </group>
+</robot>
