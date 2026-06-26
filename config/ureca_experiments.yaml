@@ -1,0 +1,44 @@
+# Flat YAML-style configuration for the URECA experiment suite.
+# The loader expects one key-value pair per line.
+
+default_n_steps_2d: 25
+default_n_steps_3d: 25
+
+two_d_start: [0.0, 0.0]
+two_d_goal: [2.0, 1.0]
+two_d_subgoal: [1.0, 1.05]
+two_d_obstacle_center: [1.0, 0.6]
+two_d_obstacle_radius: 0.20
+two_d_robot_radius: 0.10
+two_d_velocity_coeff: 0.01
+two_d_collision_cost_margin: 0.0025
+two_d_collision_cost_weight: 1000.0
+two_d_collision_constraint_enabled: false
+two_d_collision_constraint_margin: 0.0
+two_d_collision_constraint_weight: 20.0
+
+three_d_start: [0.0, 0.0, 0.0]
+three_d_goal: [2.0, 1.0, 0.0]
+three_d_subgoal: [1.0, 1.05, 0.0]
+three_d_obstacle_center: [0.5, 0.6, 0.0]
+three_d_obstacle_radius: 0.20
+three_d_robot_radius: 0.10
+three_d_velocity_coeff: 0.01
+three_d_collision_cost_margin: 0.02
+three_d_collision_cost_weight: 1000.0
+three_d_collision_constraint_enabled: true
+three_d_collision_constraint_margin: 0.0
+three_d_collision_constraint_weight: 20.0
+
+default_selected_k_2d: 12
+default_selected_k_3d: 12
+default_early_k: 2
+default_late_k_offset: 2
+blackbox_demo_k: 12
+
+penetration_targets: [-0.02, -0.05, -0.10, -0.20, -0.30]
+symmetry_perturbations: [0.00, 0.01, -0.01, 0.03, -0.03, 0.05, -0.05]
+obstacle_radius_values: [0.15, 0.20, 0.25, 0.30]
+safe_margin_values: [0.00, 0.05, 0.10]
+two_d_subgoal_y_values: [0.9, 1.0, 1.1, 1.2, 1.3]
+three_d_subgoal_z_values: [-0.10, -0.05, 0.0, 0.05, 0.10]

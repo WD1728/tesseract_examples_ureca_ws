@@ -49,6 +49,9 @@ add_library(
   ${PROJECT_NAME}
 
   src/example.cpp
+  src/ureca_experiment_utils.cpp
+  src/ureca_experiment_metrics.cpp
+  src/ureca_trajopt_blackbox.cpp
   src/2d_obstacle_example.cpp
   src/3d_example.cpp
   src/basic_cartesian_example.cpp
@@ -131,6 +134,8 @@ add_example(${PROJECT_NAME}_puzzle_piece_auxillary_axes_example src/puzzle_piece
 add_example(${PROJECT_NAME}_puzzle_piece_example src/puzzle_piece_example_node.cpp)
 add_example(${PROJECT_NAME}_scene_graph_example src/scene_graph_example_node.cpp)
 add_example(${PROJECT_NAME}_benchmarks src/example_benchmarks_node.cpp)
+add_example(${PROJECT_NAME}_ureca_run_experiment_suite src/ureca_run_experiment_suite.cpp)
+add_example(${PROJECT_NAME}_ureca_run_blackbox_demo src/ureca_run_blackbox_demo.cpp)
 
 # OMPL Constraint planning is not available in version less than 1.4 if(NOT OMPL_VERSION VERSION_LESS "1.4.0")
 # add_example(${PROJECT_NAME}_glass_upright_ompl_example src/glass_upright_ompl_example_node.cpp) endif()
@@ -141,10 +146,19 @@ install(
   DESTINATION include
   FILES_MATCHING
   PATTERN "*.h"
+  PATTERN "*.hpp"
   PATTERN ".svn" EXCLUDE)
 
 install(
   DIRECTORY support
+  DESTINATION share/${PROJECT_NAME})
+
+install(
+  DIRECTORY config scripts results
+  DESTINATION share/${PROJECT_NAME})
+
+install(
+  FILES README_URECA_EXPERIMENTS.md
   DESTINATION share/${PROJECT_NAME})
   
 configure_package(
@@ -164,6 +178,8 @@ configure_package(
           ${PROJECT_NAME}_puzzle_piece_example
           ${PROJECT_NAME}_scene_graph_example
           ${PROJECT_NAME}_benchmarks
+          ${PROJECT_NAME}_ureca_run_experiment_suite
+          ${PROJECT_NAME}_ureca_run_blackbox_demo
   DEPENDENCIES
     tesseract_environment
     tesseract_command_language
@@ -191,6 +207,8 @@ install(
     ${PROJECT_NAME}_puzzle_piece_example
     ${PROJECT_NAME}_scene_graph_example
     ${PROJECT_NAME}_benchmarks
+    ${PROJECT_NAME}_ureca_run_experiment_suite
+    ${PROJECT_NAME}_ureca_run_blackbox_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
