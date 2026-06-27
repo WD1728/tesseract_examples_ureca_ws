@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="ureca_success_obstacle_3d">
+
+  <contact_managers_plugin_config filename="package://tesseract_support/urdf/contact_manager_plugins.yaml"/>
+
+  <group name="manipulator">
+    <chain base_link="base_link" tip_link="robot_body"/>
+  </group>
+
+  <group_state name="home" group="manipulator">
+    <joint name="joint_x" value="0.0"/>
+    <joint name="joint_y" value="0.0"/>
+    <joint name="joint_z" value="0.0"/>
+  </group_state>
+
+</robot>

@@ -4,6 +4,7 @@
 #include <Eigen/Core>
 
 #include <filesystem>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -19,16 +20,18 @@ struct UrecaSummaryRow
   std::string penetration_label;
   bool trajopt_success{ false };
   std::string trajopt_message;
-  double solve_time_ms{ 0.0 };
+  double solve_time_ms{ std::numeric_limits<double>::quiet_NaN() };
   bool collision_free{ false };
-  double post_path_length{ 0.0 };
-  double post_smoothness_proxy{ 0.0 };
-  double post_min_clearance_proxy{ 0.0 };
-  double post_min_obstacle_clearance_proxy{ 0.0 };
-  double post_min_inter_robot_clearance_proxy{ 0.0 };
+  double opt_path_objective{ std::numeric_limits<double>::quiet_NaN() };
+  double post_path_length{ std::numeric_limits<double>::quiet_NaN() };
+  double post_smoothness_proxy{ std::numeric_limits<double>::quiet_NaN() };
+  double post_min_clearance_proxy{ std::numeric_limits<double>::quiet_NaN() };
+  double post_min_obstacle_clearance_proxy{ std::numeric_limits<double>::quiet_NaN() };
+  double post_min_inter_robot_clearance_proxy{ std::numeric_limits<double>::quiet_NaN() };
   std::string trajectory_file;
 };
 
+double urecaComputePathObjective(const std::vector<Eigen::VectorXd>& trajectory, double velocity_coeff);
 double urecaComputePathLength(const std::vector<Eigen::VectorXd>& trajectory);
 double urecaComputeSmoothnessProxy(const std::vector<Eigen::VectorXd>& trajectory);
 double urecaComputeMinSphereObstacleClearanceProxy(const std::vector<Eigen::VectorXd>& trajectory,

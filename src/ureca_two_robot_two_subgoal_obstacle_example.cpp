@@ -41,6 +41,8 @@ namespace tesseract_examples
 namespace
 {
 constexpr double ROBOT_RADIUS = 0.10;
+constexpr double VELOCITY_COEFF = 0.01;
+constexpr double ACCELERATION_COEFF = 0.01;
 const Eigen::Vector3d OBSTACLE_CENTER(1.0, 0.4, 0.0);
 constexpr double OBSTACLE_RADIUS = 0.25;
 
@@ -140,8 +142,9 @@ std::shared_ptr<tesseract_common::ProfileDictionary> createProfiles()
   composite_profile->collision_constraint_config.collision_check_config.type =
       tesseract_collision::CollisionEvaluatorType::LVS_DISCRETE;
   composite_profile->smooth_velocities = true;
-  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(6) * 0.01;
-  composite_profile->smooth_accelerations = false;
+  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(6) * VELOCITY_COEFF;
+  composite_profile->smooth_accelerations = true;
+  composite_profile->acceleration_coeff = Eigen::VectorXd::Ones(6) * ACCELERATION_COEFF;
   composite_profile->smooth_jerks = false;
   profiles->addProfile(TRAJOPT_NAMESPACE, "ureca_two_robot_two_subgoal_obstacle_program", composite_profile);
 
@@ -267,6 +270,7 @@ bool UrecaTwoRobotTwoSubgoalObstacleExample::run()
           row.post_min_inter_robot_clearance_proxy = min_inter_robot;
           row.post_min_clearance_proxy = std::min(min_obstacle, min_inter_robot);
           row.collision_free = row.post_min_clearance_proxy >= 0.0;
+          row.opt_path_objective = urecaComputePathObjective(trajectory, VELOCITY_COEFF);
           row.post_path_length = urecaComputePathLength(trajectory);
           row.post_smoothness_proxy = urecaComputeSmoothnessProxy(trajectory);
           row.trajectory_file = row.case_id + ".csv";

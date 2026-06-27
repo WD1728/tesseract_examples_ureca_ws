@@ -40,6 +40,8 @@ namespace
 {
 constexpr double OBSTACLE_RADIUS = 0.20;
 constexpr double ROBOT_RADIUS = 0.10;
+constexpr double VELOCITY_COEFF = 0.01;
+constexpr double ACCELERATION_COEFF = 0.01;
 const Eigen::Vector3d OBSTACLE_CENTER(0.5, 0.5, 0.0);
 
 bool extractTrajectory(const CompositeInstruction& result, std::vector<Eigen::VectorXd>& trajectory)
@@ -114,8 +116,9 @@ std::shared_ptr<tesseract_common::ProfileDictionary> createProfiles()
   composite_profile->collision_constraint_config.collision_check_config.type =
       tesseract_collision::CollisionEvaluatorType::LVS_DISCRETE;
   composite_profile->smooth_velocities = true;
-  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(3) * 0.01;
-  composite_profile->smooth_accelerations = false;
+  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(3) * VELOCITY_COEFF;
+  composite_profile->smooth_accelerations = true;
+  composite_profile->acceleration_coeff = Eigen::VectorXd::Ones(3) * ACCELERATION_COEFF;
   composite_profile->smooth_jerks = false;
   profiles->addProfile(TRAJOPT_NAMESPACE, "ureca_symmetry_failure_3d_program", composite_profile);
 
@@ -212,6 +215,7 @@ bool UrecaSymmetryFailure3DExample::run()
         const auto per_step =
             urecaComputePerStepObstacleClearanceProxy(opt_traj, OBSTACLE_CENTER, OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 3);
         row.collision_free = (min_clearance >= 0.0);
+        row.opt_path_objective = urecaComputePathObjective(opt_traj, VELOCITY_COEFF);
         row.post_path_length = urecaComputePathLength(opt_traj);
         row.post_smoothness_proxy = urecaComputeSmoothnessProxy(opt_traj);
         row.post_min_clearance_proxy = min_clearance;

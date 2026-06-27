@@ -56,6 +56,7 @@ add_library(
   src/ureca_symmetry_failure_3d_example.cpp
   src/ureca_two_robot_two_subgoal_example.cpp
   src/ureca_two_robot_two_subgoal_obstacle_example.cpp
+  src/ureca_success_obstacle_3d_example.cpp
   src/2d_obstacle_example.cpp
   src/3d_example.cpp
   src/basic_cartesian_example.cpp
@@ -144,6 +145,7 @@ add_example(${PROJECT_NAME}_ureca_penetration_failure_3d_example src/ureca_penet
 add_example(${PROJECT_NAME}_ureca_symmetry_failure_3d_example src/ureca_symmetry_failure_3d_example_node.cpp)
 add_example(${PROJECT_NAME}_ureca_two_robot_two_subgoal_example src/ureca_two_robot_two_subgoal_example_node.cpp)
 add_example(${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example src/ureca_two_robot_two_subgoal_obstacle_example_node.cpp)
+add_example(${PROJECT_NAME}_ureca_success_obstacle_3d_example src/ureca_success_obstacle_3d_example_node.cpp)
 
 # OMPL Constraint planning is not available in version less than 1.4 if(NOT OMPL_VERSION VERSION_LESS "1.4.0")
 # add_example(${PROJECT_NAME}_glass_upright_ompl_example src/glass_upright_ompl_example_node.cpp) endif()
@@ -188,6 +190,7 @@ configure_package(
           ${PROJECT_NAME}_ureca_symmetry_failure_3d_example
           ${PROJECT_NAME}_ureca_two_robot_two_subgoal_example
           ${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example
+          ${PROJECT_NAME}_ureca_success_obstacle_3d_example
   DEPENDENCIES
     tesseract_environment
     tesseract_command_language
@@ -221,6 +224,7 @@ install(
     ${PROJECT_NAME}_ureca_symmetry_failure_3d_example
     ${PROJECT_NAME}_ureca_two_robot_two_subgoal_example
     ${PROJECT_NAME}_ureca_two_robot_two_subgoal_obstacle_example
+    ${PROJECT_NAME}_ureca_success_obstacle_3d_example
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

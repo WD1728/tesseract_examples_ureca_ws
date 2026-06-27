@@ -42,6 +42,8 @@ namespace
 {
 constexpr double OBSTACLE_RADIUS = 0.20;
 constexpr double ROBOT_RADIUS = 0.10;
+constexpr double VELOCITY_COEFF = 0.01;
+constexpr double ACCELERATION_COEFF = 0.01;
 const Eigen::Vector2d OBSTACLE_CENTER(1.0, 0.6);
 
 bool extractTrajectory(const CompositeInstruction& result, std::vector<Eigen::VectorXd>& trajectory)
@@ -123,8 +125,9 @@ std::shared_ptr<tesseract_common::ProfileDictionary> createProfiles()
   composite_profile->collision_constraint_config.collision_check_config.type =
       tesseract_collision::CollisionEvaluatorType::LVS_DISCRETE;
   composite_profile->smooth_velocities = true;
-  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(2) * 0.01;
-  composite_profile->smooth_accelerations = false;
+  composite_profile->velocity_coeff = Eigen::VectorXd::Ones(2) * VELOCITY_COEFF;
+  composite_profile->smooth_accelerations = true;
+  composite_profile->acceleration_coeff = Eigen::VectorXd::Ones(2) * ACCELERATION_COEFF;
   composite_profile->smooth_jerks = false;
   profiles->addProfile(TRAJOPT_NAMESPACE, "ureca_subgoal_timing_2d_program", composite_profile);
 
@@ -227,6 +230,7 @@ bool UrecaSubgoalTiming2DExample::run()
             opt_traj, Eigen::Vector3d(OBSTACLE_CENTER.x(), OBSTACLE_CENTER.y(), 0.0), OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 2);
 
         row.collision_free = (min_obstacle_clearance >= 0.0);
+        row.opt_path_objective = urecaComputePathObjective(opt_traj, VELOCITY_COEFF);
         row.post_path_length = urecaComputePathLength(opt_traj);
         row.post_smoothness_proxy = urecaComputeSmoothnessProxy(opt_traj);
         row.post_min_obstacle_clearance_proxy = min_obstacle_clearance;

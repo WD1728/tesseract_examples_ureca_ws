@@ -3,12 +3,10 @@ TESSERACT_COMMON_IGNORE_WARNINGS_PUSH
 #include <console_bridge/console.h>
 TESSERACT_COMMON_IGNORE_WARNINGS_POP
 
-#include <tesseract_examples/ureca_subgoal_timing_3d_example.hpp>
+#include <tesseract_examples/ureca_success_obstacle_3d_example.hpp>
 #include <tesseract_examples/ureca_result_utils.hpp>
 
-#include <algorithm>
 #include <filesystem>
-#include <fstream>
 #include <limits>
 #include <string>
 #include <vector>
@@ -44,6 +42,8 @@ constexpr double OBSTACLE_RADIUS = 0.20;
 constexpr double ROBOT_RADIUS = 0.10;
 constexpr double VELOCITY_COEFF = 0.01;
 constexpr double ACCELERATION_COEFF = 0.01;
+constexpr int N_STEPS = 25;
+constexpr int BEST_K = 14;
 const Eigen::Vector3d OBSTACLE_CENTER(0.5, 0.6, 0.0);
 
 bool extractTrajectory(const CompositeInstruction& result, std::vector<Eigen::VectorXd>& trajectory)
@@ -87,7 +87,7 @@ CompositeInstruction buildProgram(const std::vector<std::string>& joint_names,
                                   int n,
                                   int k)
 {
-  CompositeInstruction program("ureca_subgoal_timing_3d_program",
+  CompositeInstruction program("ureca_success_obstacle_3d_program",
                                ManipulatorInfo("manipulator", "base_link", "robot_body"));
   for (int i = 0; i < n; ++i)
   {
@@ -116,7 +116,7 @@ std::shared_ptr<tesseract_common::ProfileDictionary> createProfiles()
   composite_profile->smooth_accelerations = true;
   composite_profile->acceleration_coeff = Eigen::VectorXd::Ones(3) * ACCELERATION_COEFF;
   composite_profile->smooth_jerks = false;
-  profiles->addProfile(TRAJOPT_NAMESPACE, "ureca_subgoal_timing_3d_program", composite_profile);
+  profiles->addProfile(TRAJOPT_NAMESPACE, "ureca_success_obstacle_3d_program", composite_profile);
 
   auto fixed_profile = std::make_shared<TrajOptDefaultMoveProfile>();
   fixed_profile->cartesian_cost_config.enabled = false;
@@ -137,17 +137,17 @@ std::shared_ptr<tesseract_common::ProfileDictionary> createProfiles()
 
 }  // namespace
 
-UrecaSubgoalTiming3DExample::UrecaSubgoalTiming3DExample(std::shared_ptr<tesseract_environment::Environment> env,
-                                                         std::shared_ptr<tesseract_visualization::Visualization> plotter,
-                                                         bool ifopt,
-                                                         bool debug)
+UrecaSuccessObstacle3DExample::UrecaSuccessObstacle3DExample(std::shared_ptr<tesseract_environment::Environment> env,
+                                                             std::shared_ptr<tesseract_visualization::Visualization> plotter,
+                                                             bool ifopt,
+                                                             bool debug)
   : Example(std::move(env), std::move(plotter))
   , ifopt_(ifopt)
   , debug_(debug)
 {
 }
 
-bool UrecaSubgoalTiming3DExample::run()
+bool UrecaSuccessObstacle3DExample::run()
 {
   console_bridge::setLogLevel(debug_ ? console_bridge::LogLevel::CONSOLE_BRIDGE_LOG_DEBUG :
                                        console_bridge::LogLevel::CONSOLE_BRIDGE_LOG_INFO);
@@ -167,79 +167,59 @@ bool UrecaSubgoalTiming3DExample::run()
     return false;
   }
 
-  const int n = 25;
-  const std::filesystem::path result_dir("/home/wenda/tesseract_ws/result_ureca/subgoal_timing_3d");
+  const std::filesystem::path result_dir("/home/wenda/tesseract_ws/result_ureca/success_obstacle_3d");
   urecaEnsureResultLayout(result_dir);
-
   auto profiles = createProfiles();
   TrajOptMotionPlanner planner(TRAJOPT_NAMESPACE);
+
+  CompositeInstruction program = buildProgram(joint_names, start, subgoal, goal, N_STEPS, BEST_K);
+  std::vector<Eigen::VectorXd> seed_traj;
+  if (!extractTrajectory(program, seed_traj))
+    return false;
+
+  PlannerRequest request;
+  request.instructions = program;
+  request.env = env_;
+  request.profiles = profiles;
+  request.verbose = false;
+  request.format_result_as_input = false;
+
+  tesseract_common::Stopwatch stopwatch;
+  stopwatch.start();
+  PlannerResponse response = planner.solve(request);
+  stopwatch.stop();
+
   std::vector<UrecaSummaryRow> rows;
+  UrecaSummaryRow row;
+  row.case_id = "K_" + std::to_string(BEST_K);
+  row.K = BEST_K;
+  row.trajopt_success = response.successful;
+  row.trajopt_message = response.message;
+  row.solve_time_ms = stopwatch.elapsedSeconds() * 1000.0;
 
-  int best_k = -1;
-  double best_clearance = -std::numeric_limits<double>::infinity();
-  double best_path = std::numeric_limits<double>::infinity();
-
-  for (int k = 1; k < n - 1; ++k)
+  if (response.successful)
   {
-    CompositeInstruction program = buildProgram(joint_names, start, subgoal, goal, n, k);
-    PlannerRequest request;
-    request.instructions = program;
-    request.env = env_;
-    request.profiles = profiles;
-    request.verbose = false;
-    request.format_result_as_input = false;
-
-    tesseract_common::Stopwatch stopwatch;
-    stopwatch.start();
-    PlannerResponse response = planner.solve(request);
-    stopwatch.stop();
-
-    UrecaSummaryRow row;
-    row.case_id = "K_" + std::to_string(k);
-    row.K = k;
-    row.trajopt_success = response.successful;
-    row.trajopt_message = response.message;
-    row.solve_time_ms = stopwatch.elapsedSeconds() * 1000.0;
-
-    if (response.successful)
+    std::vector<Eigen::VectorXd> opt_traj;
+    if (extractTrajectory(response.results, opt_traj))
     {
-      std::vector<Eigen::VectorXd> opt_traj;
-      if (extractTrajectory(response.results, opt_traj))
-      {
-        const double min_clearance = urecaComputeMinSphereObstacleClearanceProxy(
-            opt_traj, OBSTACLE_CENTER, OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 3);
-        const auto per_step =
-            urecaComputePerStepObstacleClearanceProxy(opt_traj, OBSTACLE_CENTER, OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 3);
-
-        row.collision_free = (min_clearance >= 0.0);
-        row.opt_path_objective = urecaComputePathObjective(opt_traj, VELOCITY_COEFF);
-        row.post_path_length = urecaComputePathLength(opt_traj);
-        row.post_smoothness_proxy = urecaComputeSmoothnessProxy(opt_traj);
-        row.post_min_obstacle_clearance_proxy = min_clearance;
-        row.post_min_clearance_proxy = min_clearance;
-        row.post_min_inter_robot_clearance_proxy = std::numeric_limits<double>::quiet_NaN();
-        row.trajectory_file = row.case_id + ".csv";
-        urecaWriteSingleRobotTrajectoryCsv(result_dir / "trajectories" / row.trajectory_file, opt_traj, per_step, 3);
-
-        if (row.collision_free &&
-            (min_clearance > best_clearance ||
-             (std::abs(min_clearance - best_clearance) < 1e-9 && row.post_path_length < best_path)))
-        {
-          best_k = k;
-          best_clearance = min_clearance;
-          best_path = row.post_path_length;
-        }
-      }
+      const double min_clearance =
+          urecaComputeMinSphereObstacleClearanceProxy(opt_traj, OBSTACLE_CENTER, OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 3);
+      const auto per_step =
+          urecaComputePerStepObstacleClearanceProxy(opt_traj, OBSTACLE_CENTER, OBSTACLE_RADIUS, ROBOT_RADIUS, 0, 3);
+      row.collision_free = (min_clearance >= 0.0);
+      row.opt_path_objective = urecaComputePathObjective(opt_traj, VELOCITY_COEFF);
+      row.post_path_length = urecaComputePathLength(opt_traj);
+      row.post_smoothness_proxy = urecaComputeSmoothnessProxy(opt_traj);
+      row.post_min_obstacle_clearance_proxy = min_clearance;
+      row.post_min_clearance_proxy = min_clearance;
+      row.post_min_inter_robot_clearance_proxy = std::numeric_limits<double>::quiet_NaN();
+      row.trajectory_file = row.case_id + ".csv";
+      urecaWriteSingleRobotTrajectoryCsv(result_dir / "trajectories" / row.trajectory_file, opt_traj, per_step, 3);
     }
-
-    rows.push_back(row);
   }
 
+  rows.push_back(row);
   urecaWriteSummaryCsv(result_dir / "summary.csv", rows);
-  std::ofstream best_file(result_dir / "best_k.txt");
-  if (best_file.is_open())
-    best_file << best_k << "\n";
-
   return true;
 }
 

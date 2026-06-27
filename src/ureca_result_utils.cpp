@@ -62,6 +62,14 @@ Eigen::VectorXd slicePoint(const Eigen::VectorXd& q, int offset, int dim)
 
 }  // namespace
 
+double urecaComputePathObjective(const std::vector<Eigen::VectorXd>& trajectory, double velocity_coeff)
+{
+  double total = 0.0;
+  for (std::size_t i = 0; i + 1 < trajectory.size(); ++i)
+    total += (trajectory[i + 1] - trajectory[i]).squaredNorm();
+  return velocity_coeff * total;
+}
+
 double urecaComputePathLength(const std::vector<Eigen::VectorXd>& trajectory)
 {
   double total = 0.0;
@@ -181,7 +189,7 @@ void urecaWriteSummaryCsv(const std::filesystem::path& csv_path, const std::vect
   std::ofstream output(csv_path);
   output << "case_id,K,k1,k2,perturbation,penetration_label,"
             "trajopt_success,trajopt_message,solve_time_ms,collision_free,"
-            "post_path_length,post_smoothness_proxy,post_min_clearance_proxy,"
+            "opt_path_objective,post_path_length,post_smoothness_proxy,post_min_clearance_proxy,"
             "post_min_obstacle_clearance_proxy,post_min_inter_robot_clearance_proxy,"
             "trajectory_file\n";
 
@@ -197,6 +205,7 @@ void urecaWriteSummaryCsv(const std::filesystem::path& csv_path, const std::vect
            << escapeCsv(row.trajopt_message) << ","
            << formatDouble(row.solve_time_ms) << ","
            << (row.collision_free ? 1 : 0) << ","
+           << formatDouble(row.opt_path_objective) << ","
            << formatDouble(row.post_path_length) << ","
            << formatDouble(row.post_smoothness_proxy) << ","
            << formatDouble(row.post_min_clearance_proxy) << ","
